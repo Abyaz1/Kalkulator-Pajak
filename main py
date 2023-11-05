@@ -1,0 +1,84 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.spinner import Spinner
+
+class TaxApp(App):
+    def build(self):
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        self.income = TextInput(hint_text='MASUKAN JUMLAH KEKAYAAN', multiline=False, size_hint_y=None, height=30)
+        self.tax_type = Spinner(text='JENIS PAJAK', values=('PAJAK PENGHASILAN', 'PAJAK BUMI DAN BANGUNAN', 'PAJAK PERTAMBAHAN NILAI'), size_hint_y=None, height=30)
+        self.tax_status_label = Label(text='STATUS')
+        self.tax_status = Spinner(text='BELUM MENIKAH', values=('BELUM MENIKAH', 'MENIKAH'), size_hint_y=None, height=30)
+        self.tax_status_anak = Spinner(text='TIDAK PUNYA ANAK', values=('TIDAK PUNYA ANAK', '1 ANAK', '2 ANAK', '3 ANAK ATAU LEBIH'), size_hint_y=None, height=30)
+        self.result = Label()
+        button = Button(text='KALKUKALASI JUMLAH PAJAK', size_hint_y=None, height=30, background_color=[1, 0, 0, 1], color=[1, 1, 1, 1])
+        button.bind(on_press=self.calculate_tax)
+        layout.add_widget(Label(text='Tax Calculator', font_size='20sp', size_hint_y=None, height=40))
+        layout.add_widget(self.income)
+        layout.add_widget(self.tax_type)
+        layout.add_widget(self.tax_status_label)
+        layout.add_widget(self.tax_status)
+        layout.add_widget(self.tax_status_anak)
+        layout.add_widget(button)
+        layout.add_widget(self.result)
+        return layout
+
+    def on_tax_type_select(self, instance, text):
+        if text == 'PAJAK PENGHASILAN':
+            self.tax_status_label.opacity = 1
+            self.tax_status.opacity = 1
+        else:
+            self.tax_status_label.opacity = 0
+            self.tax_status.opacity = 0
+
+    def calculate_tax(self, instance):
+        try:
+            income = float(self.income.text)
+            tax_type = self.tax_type.text
+            if tax_type == 'PAJAK PENGHASILAN':
+                if income <= 50000000:
+                    tax = 0.05 * income
+                elif income <= 250000000:
+                    tax = 0.05 * 50000000 + 0.15 * (income - 50000000)
+                elif income <= 500000000:
+                    tax = 0.05 * 50000000 + 0.15 * 200000000 + 0.25 * (income - 250000000)
+                else:
+                    tax = 0.05 * 50000000 + 0.15 * 200000000 + 0.25 * 250000000 + 0.30 * (income - 500000000)
+                total_tax = tax
+
+                formatted_income = "Rp{:,.2f}".format(income).replace(",", ".")
+                formatted_tax = "Rp{:,.2f}".format(total_tax).replace(",", ".")
+                self.result.text = f'Untuk kekayaan sebesar {formatted_income}\nJumlah pajak {tax_type} yang harus Anda bayarkan adalah: {formatted_tax}'
+            elif tax_type == 'PAJAK BUMI DAN BANGUNAN':
+                if (income - 24000000) <= 1000000:
+                    tax_rate = 0.001
+                    tax_amount = (income - 24000000) * tax_rate
+                else:
+                    tax_rate = 0.002
+                    tax_amount = (income - 24000000) * tax_rate
+
+                total_tax = tax_amount
+
+                formatted_income = "Rp{:,.2f}".format(income).replace(",", ".")
+                formatted_tax = "Rp{:,.2f}".format(total_tax).replace(",", ".")
+                self.result.text = f'Untuk kekayaan sebesar {formatted_income}\nJumlah pajak {tax_type} yang harus Anda bayarkan adalah: {formatted_tax}'
+            elif tax_type == 'PAJAK PERTAMBAHAN NILAI':
+                tax_rate = 0.11
+                tax_amount = income * tax_rate
+                total_tax = tax_amount
+
+                formatted_income = "Rp{:,.2f}".format(income).replace(",", ".")
+                formatted_tax = "Rp{:,.2f}".format(total_tax).replace(",", ".")
+                self.result.text = f'Untuk kekayaan sebesar {formatted_income}\nJumlah pajak {tax_type} yang harus Anda bayarkan adalah: {formatted_tax}'
+            else:
+                total_tax = 0.0
+                self.result.text = 'Please enter a valid number for income'
+
+        except ValueError:
+            self.result.text = 'Please enter a valid number for income'
+
+if __name__ == '__main__':
+    TaxApp().run()
