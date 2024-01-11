@@ -8,15 +8,15 @@ from kivy.uix.spinner import Spinner
 class TaxApp(App):
     def build(self):
         layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
-        self.income = TextInput(hint_text='MASUKAN JUMLAH KEKAYAAN', multiline=False, size_hint_y=None, height=30)
-        self.tax_type = Spinner(text='JENIS PAJAK', values=('PAJAK PENGHASILAN', 'PAJAK BUMI DAN BANGUNAN', 'PAJAK PERTAMBAHAN NILAI'), size_hint_y=None, height=30)
+        self.income = TextInput(hint_text='MASUKAN JUMLAH KEKAYAAN', multiline=False, size_hint_y=None, height=80)
+        self.tax_type = Spinner(text='JENIS PAJAK', values=('PAJAK PENGHASILAN', 'PAJAK BUMI DAN BANGUNAN', 'PAJAK PERTAMBAHAN NILAI'), size_hint_y=None, height=50)
         self.tax_status_label = Label(text='STATUS')
-        self.tax_status = Spinner(text='BELUM MENIKAH', values=('BELUM MENIKAH', 'MENIKAH'), size_hint_y=None, height=30)
-        self.tax_status_anak = Spinner(text='TIDAK PUNYA ANAK', values=('TIDAK PUNYA ANAK', '1 ANAK', '2 ANAK', '3 ANAK ATAU LEBIH'), size_hint_y=None, height=30)
+        self.tax_status = Spinner(text='BELUM MENIKAH', values=('BELUM MENIKAH', 'MENIKAH'), size_hint_y=None, height=50)
+        self.tax_status_anak = Spinner(text='TIDAK PUNYA ANAK', values=('TIDAK PUNYA ANAK', '1 ANAK', '2 ANAK', '3 ANAK ATAU LEBIH'), size_hint_y=None, height=50)
         self.result = Label()
-        button = Button(text='KALKUKALASI JUMLAH PAJAK', size_hint_y=None, height=30, background_color=[1, 0, 0, 1], color=[1, 1, 1, 1])
+        button = Button(text='KALKUKALASI JUMLAH PAJAK', size_hint_y=None, height=60, background_color=[1, 0, 0, 1], color=[1, 1, 1, 1])
         button.bind(on_press=self.calculate_tax)
-        layout.add_widget(Label(text='Tax Calculator', font_size='20sp', size_hint_y=None, height=40))
+        layout.add_widget(Label(text='Tax Calculator', font_size='20sp', size_hint_y=None, height=80))
         layout.add_widget(self.income)
         layout.add_widget(self.tax_type)
         layout.add_widget(self.tax_status_label)
@@ -39,15 +39,38 @@ class TaxApp(App):
             income = float(self.income.text)
             tax_type = self.tax_type.text
             if tax_type == 'PAJAK PENGHASILAN':
-                if income <= 50000000:
-                    tax = 0.05 * income
-                elif income <= 250000000:
-                    tax = 0.05 * 50000000 + 0.15 * (income - 50000000)
-                elif income <= 500000000:
-                    tax = 0.05 * 50000000 + 0.15 * 200000000 + 0.25 * (income - 250000000)
+                if self.tax_status.text == "BELUM MENIKAH":
+                    status = 0
+                elif self.tax_status.text == "MENIKAH":
+                 status = 1
+
+                if self.tax_status_anak.text == "TIDAK PUNYA ANAK":
+                 Status = 0
+                elif self.tax_status_anak.text == "1 ANAK":
+                    Status = 1
+                elif self.tax_status_anak.text == "2 ANAK":
+                  Status = 2
+                elif self.tax_status_anak.text == "3 ANAK ATAU LEBIH":
+                    Status = 3
+
+            PTKP = 54000000 + 4500000 *12 * status + 4500000 *12 * Status
+            if income <= PTKP:
+                tax_rate = 0
+            elif income > PTKP:
+                if (income-PTKP) <= 60000000:
+                    tax = 0.05 * (income-PTKP)
+                elif (income-PTKP) <= 250000000:
+                    tax = 0.05 * 60000000 + 0.15 * ((income-PTKP) - 60000000)
+                elif (income-PTKP) <= 500000000:
+                    tax = 0.05 * 60000000 + 0.15 * 190000000 + 0.25 * ((income-PTKP) - 250000000)
                 else:
-                    tax = 0.05 * 50000000 + 0.15 * 200000000 + 0.25 * 250000000 + 0.30 * (income - 500000000)
-                total_tax = tax
+                    tax = 0.05 * 50000000 + 0.15 * 200000000 + 0.25 * 250000000 + 0.30 * ((income-PTKP) - 500000000)
+                if tax>0 :
+                    total_tax = tax
+                elif tax<0 :
+                    total_tax = 0
+                else :
+                    print("ERROR")
 
                 formatted_income = "Rp{:,.2f}".format(income).replace(",", ".")
                 formatted_tax = "Rp{:,.2f}".format(total_tax).replace(",", ".")
