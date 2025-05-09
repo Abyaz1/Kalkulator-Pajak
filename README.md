@@ -6,3 +6,6 @@ menggunakan modul kivy untuk deploy di android
 modul : 
 -python
 -kivy
+
+penggunaan
+download modul kivy
