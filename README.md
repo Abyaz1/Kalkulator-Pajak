@@ -8,4 +8,6 @@ modul :
 -kivy
 
 penggunaan
-download modul kivy
+download 
+1.modul kivy
+2. masukan kode
