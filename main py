@@ -7,6 +7,7 @@ from kivy.uix.spinner import Spinner
 
 class TaxApp(App):
     def build(self):
+        #desain
         layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
         self.income = TextInput(hint_text='MASUKAN JUMLAH KEKAYAAN', multiline=False, size_hint_y=None, height=80)
         self.tax_type = Spinner(text='JENIS PAJAK', values=('PAJAK PENGHASILAN', 'PAJAK BUMI DAN BANGUNAN', 'PAJAK PERTAMBAHAN NILAI'), size_hint_y=None, height=50)
@@ -38,6 +39,7 @@ class TaxApp(App):
         try:
             income = float(self.income.text)
             tax_type = self.tax_type.text
+            #tanggungan
             if tax_type == 'PAJAK PENGHASILAN':
                 if self.tax_status.text == "BELUM MENIKAH":
                     status = 0
